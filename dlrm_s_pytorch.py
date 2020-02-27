@@ -471,6 +471,7 @@ if __name__ == "__main__":
     # data
     parser.add_argument("--data-size", type=int, default=1)
     parser.add_argument("--num-batches", type=int, default=0)
+    parser.add_argument("--num-test-batches", type=int, default=0)
     parser.add_argument(
         "--data-generation", type=str, default="random"
     )  # synthetic or dataset
@@ -556,7 +557,7 @@ if __name__ == "__main__":
         train_data, train_ld, test_data, test_ld = \
             dp.make_criteo_data_and_loaders(args)
         nbatches = args.num_batches if args.num_batches > 0 else len(train_ld)
-        nbatches_test = len(test_ld)
+        nbatches_test = args.num_test_batches if args.num_test_batches > 0 else len(test_ld)
 
         ln_emb = train_data.counts
         # enforce maximum limit on number of vectors per embedding
@@ -985,7 +986,7 @@ if __name__ == "__main__":
 
                     for i, (X_test, lS_o_test, lS_i_test, T_test) in enumerate(test_ld):
                         # early exit if nbatches was set by the user and was exceeded
-                        if nbatches > 0 and i >= nbatches:
+                        if nbatches_test > 0 and i >= nbatches_test:
                             break
 
                         t1_test = time_wrap(use_gpu)
